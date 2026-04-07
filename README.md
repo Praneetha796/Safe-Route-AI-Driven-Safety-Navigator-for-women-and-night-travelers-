@@ -1,5 +1,10 @@
-# Safe-Route-AI-Driven-Safety-Navigator-for-women-and-night-travelers-
+<img width="1881" height="915" alt="Screenshot 2026-04-07 105804" src="https://github.com/user-attachments/assets/91ed8462-fff2-46a4-8789-f6767d5492bf" /># Safe-Route-AI-Driven-Safety-Navigator-for-women-and-night-travelers-
 SafeRoute is an AI-driven safety navigation system designed for women and night travelers. It provides real-time GPS tracking, safe route suggestions, danger zone detection, voice-based emergency activation, and live location sharing to enhance personal safety.
+
+ ## Live Demo
+   Project Link:
+   https://praneetha796.github.io/Safe-Route-AI-Driven-Safety-Navigator-for-women-and-night-travelers-/
+   click the link to use the application in real-time.
 
 ## Features
 - Real-time GPS location tracking
@@ -64,4 +69,11 @@ SafeRoute is an AI-driven safety navigation system designed for women and night 
   - Leaflet.js Documentation
   - MDN Web Docs
   - OpenStreetMap
-  - Web Speech API 
+  - Web Speech API
+
+
+  
+  
+
+
+  
