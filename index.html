@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeRoute – Voice Enabled Safety Navigation</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/style.css">
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body class="p-4 min-h-screen">
+
+<header class="mb-6">
+<h1 class="text-3xl font-bold text-pink-700">SafeRoute AI</h1>
+<p class="text-gray-500 text-sm">
+Voice-based Safe Navigation for Women & Night Travelers
+</p>
+</header>
+
+<main class="grid lg:grid-cols-3 gap-6">
+
+<div class="lg:col-span-2 space-y-6">
+
+<div class="bg-white app-card p-6 rounded-xl">
+<h2 class="text-xl font-bold mb-3">Safe Route Navigation</h2>
+
+<div class="flex justify-between bg-gray-100 p-3 rounded-lg text-sm">
+<span>AI Decision:</span>
+<span id="route-status">Waiting for command…</span>
+</div>
+
+<button onclick="findSafestRoute()"
+class="w-full mt-3 p-3 bg-indigo-500 text-white rounded-xl">
+Start Safe Route
+</button>
+
+<div id="map" class="mt-4 rounded-lg"></div>
+</div>
+
+<div class="bg-white app-card p-6 rounded-xl text-center">
+<h2 class="text-red-600 font-bold">Emergency SOS</h2>
+
+<button id="sosBtn" onclick="toggleSOS()"
+class="w-full h-28 rounded-full bg-pink-500 text-white text-2xl font-bold">
+PANIC
+</button>
+
+<p id="sosText">Say: "help" or "emergency"</p>
+</div>
+
+</div>
+
+<div class="space-y-6">
+
+<div class="bg-white app-card p-6 rounded-xl">
+<h3>Voice Assistant</h3>
+<p>Status: <span id="voiceStatus" class="text-green-600">Listening…</span></p>
+</div>
+
+<div class="bg-white app-card p-6 rounded-xl">
+<h3>Emergency Contacts</h3>
+
+<form onsubmit="addContact(event)">
+<input id="contactName" placeholder="Name" class="w-full p-2 border mb-2">
+<input id="contactPhone" placeholder="Phone" class="w-full p-2 border mb-2">
+<button class="w-full bg-pink-500 text-white p-2">Add</button>
+</form>
+
+<ul id="contactList"></ul>
+</div>
+
+<div class="bg-white app-card p-6 rounded-xl">
+<h3>System Log</h3>
+<div id="log" class="h-56 overflow-y-auto bg-gray-50 p-2"></div>
+</div>
+
+</div>
+</main>
+
+<script src="js/script.js"></script>
+</body>
+</html>
