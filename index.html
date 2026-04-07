@@ -8,6 +8,8 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/style.css">
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
@@ -36,7 +38,6 @@ Voice-based Safe Navigation for Women & Night Travelers
 
 <div class="lg:col-span-2 space-y-6">
 
-<!-- SAFE ROUTE -->
 <div class="bg-white app-card p-6 rounded-xl">
 <h2 class="text-xl font-bold mb-3">Safe Route Navigation</h2>
 
@@ -53,7 +54,6 @@ Start Safe Route
 <div id="map" class="mt-4 rounded-lg"></div>
 </div>
 
-<!-- SOS -->
 <div class="bg-white app-card p-6 rounded-xl text-center">
 <h2 class="text-red-600 font-bold">Emergency SOS</h2>
 
@@ -67,7 +67,6 @@ PANIC
 
 </div>
 
-<!-- RIGHT -->
 <div class="space-y-6">
 
 <div class="bg-white app-card p-6 rounded-xl">
@@ -131,7 +130,6 @@ function findSafestRoute(){
  drawnRoutes.forEach(r=>map.removeLayer(r));
 
  const routes=generateRoutes(currentLocation.lat,currentLocation.lon);
-
  let safest=Object.keys(routes)[0];
 
  const line=L.polyline(routes[safest],{color:"green"}).addTo(map);
@@ -214,6 +212,7 @@ function log(msg){
  d.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
  document.getElementById("log").prepend(d);
 }
+
 </script>
 
 </body>
