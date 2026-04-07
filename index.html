@@ -7,213 +7,116 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 
+<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="css/style.css">
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- Your CSS -->
+<link rel="stylesheet" href="css/style.css">
+  
 <style>
-body { font-family: Inter, sans-serif; background:#f9fafb; }
-.app-card { box-shadow: 0 10px 25px rgba(0,0,0,.08); }
-.sos-active { animation: pulse 1.5s infinite; }
-@keyframes pulse {
-  0%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}
-  70%{box-shadow:0 0 0 20px rgba(239,68,68,0)}
-  100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}
+#map {
+  height: 300px;
+  width: 100%;
 }
-#map { height:300px; width:100%; }
 </style>
 </head>
 
-<body class="p-4 min-h-screen">
+<body class="p-4 min-h-screen bg-gray-50">
 
 <header class="mb-6">
 <h1 class="text-3xl font-bold text-pink-700">SafeRoute AI</h1>
 <p class="text-gray-500 text-sm">
-Voice-based Safe Navigation for Women & Night Travelers
+AI-based Safe Navigation for Women & Night Travelers
 </p>
 </header>
 
 <main class="grid lg:grid-cols-3 gap-6">
 
+<!-- LEFT SIDE -->
 <div class="lg:col-span-2 space-y-6">
 
-<div class="bg-white app-card p-6 rounded-xl">
+<!-- SAFE ROUTE -->
+<div class="bg-white shadow-lg p-6 rounded-xl">
 <h2 class="text-xl font-bold mb-3">Safe Route Navigation</h2>
 
 <div class="flex justify-between bg-gray-100 p-3 rounded-lg text-sm">
 <span>AI Decision:</span>
-<span id="route-status">Waiting for command…</span>
+<span id="route-status" class="text-gray-500">
+Waiting for command…
+</span>
 </div>
 
 <button onclick="findSafestRoute()"
-class="w-full mt-3 p-3 bg-indigo-500 text-white rounded-xl">
+class="w-full mt-3 p-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-semibold">
 Start Safe Route
 </button>
 
 <div id="map" class="mt-4 rounded-lg"></div>
+
+<p class="text-xs text-gray-500 mt-2">
+Say: <b>“start safe route”</b>
+</p>
 </div>
 
-<div class="bg-white app-card p-6 rounded-xl text-center">
-<h2 class="text-red-600 font-bold">Emergency SOS</h2>
+<!-- SOS -->
+<div class="bg-white shadow-lg p-6 rounded-xl text-center">
+<h2 class="text-red-600 font-bold text-lg mb-2">Emergency SOS</h2>
 
 <button id="sosBtn" onclick="toggleSOS()"
-class="w-full h-28 rounded-full bg-pink-500 text-white text-2xl font-bold">
+class="w-full h-28 rounded-full bg-pink-500 hover:bg-red-600 text-white text-2xl font-bold transition">
 PANIC
 </button>
 
-<p id="sosText">Say: "help" or "emergency"</p>
+<p id="sosText" class="mt-2 text-sm text-gray-600">
+Say: <b>“help”</b> or <b>“emergency”</b>
+</p>
 </div>
 
 </div>
 
+<!-- RIGHT SIDE -->
 <div class="space-y-6">
 
-<div class="bg-white app-card p-6 rounded-xl">
-<h3>Voice Assistant</h3>
-<p>Status: <span id="voiceStatus" class="text-green-600">Listening…</span></p>
+<!-- VOICE -->
+<div class="bg-white shadow-lg p-6 rounded-xl">
+<h3 class="font-bold mb-1">Voice Assistant</h3>
+<p class="text-sm">
+Status:
+<span id="voiceStatus" class="text-green-600 font-semibold">Listening…</span>
+</p>
 </div>
 
-<div class="bg-white app-card p-6 rounded-xl">
-<h3>Emergency Contacts</h3>
+<!-- CONTACTS -->
+<div class="bg-white shadow-lg p-6 rounded-xl">
+<h3 class="font-bold mb-2">Emergency Contacts</h3>
 
-<form onsubmit="addContact(event)">
-<input id="contactName" placeholder="Name" class="w-full p-2 border mb-2">
-<input id="contactPhone" placeholder="Phone" class="w-full p-2 border mb-2">
-<button class="w-full bg-pink-500 text-white p-2">Add</button>
+<form onsubmit="addContact(event)" class="space-y-2">
+<input id="contactName" placeholder="Name"
+class="w-full p-2 border rounded" required>
+
+<input id="contactPhone" placeholder="Phone Number"
+class="w-full p-2 border rounded" required>
+
+<button class="w-full bg-pink-500 hover:bg-pink-600 text-white p-2 rounded">
+Add Contact
+</button>
 </form>
 
-<ul id="contactList"></ul>
+<ul id="contactList" class="mt-3 text-sm space-y-1"></ul>
 </div>
 
-<div class="bg-white app-card p-6 rounded-xl">
-<h3>System Log</h3>
-<div id="log" class="h-56 overflow-y-auto bg-gray-50 p-2"></div>
+<!-- LOG -->
+<div class="bg-white shadow-lg p-6 rounded-xl">
+<h3 class="font-bold mb-2">System Log</h3>
+<div id="log" class="h-56 overflow-y-auto bg-gray-50 p-2 rounded text-xs"></div>
 </div>
 
 </div>
 </main>
 
-<script>
-
-/* MAP */
-let map, currentLocation=null, drawnRoutes=[];
-
-function initMap(lat, lon){
-  map=L.map("map").setView([lat,lon],15);
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-  .addTo(map);
-
-  L.marker([lat,lon]).addTo(map).bindPopup("You are here").openPopup();
-}
-
-navigator.geolocation.getCurrentPosition(
- p=>initMap(p.coords.latitude,p.coords.longitude)
-);
-
-navigator.geolocation.watchPosition(p=>{
- currentLocation={lat:p.coords.latitude,lon:p.coords.longitude};
-});
-
-/* ROUTE */
-function generateRoutes(lat,lon){
- return {
-  "Main Road":[[lat,lon],[lat+0.002,lon+0.002]],
-  "Shortcut":[[lat,lon],[lat+0.001,lon-0.003]]
- };
-}
-
-function findSafestRoute(){
- if(!currentLocation) return;
-
- drawnRoutes.forEach(r=>map.removeLayer(r));
-
- const routes=generateRoutes(currentLocation.lat,currentLocation.lon);
- let safest=Object.keys(routes)[0];
-
- const line=L.polyline(routes[safest],{color:"green"}).addTo(map);
- drawnRoutes=[line];
-
- log("Safe route selected: "+safest);
-}
-
-/* CONTACTS */
-let emergencyContacts=[];
-
-function addContact(e){
- e.preventDefault();
-
- const name=contactName.value;
- const phone=contactPhone.value;
-
- emergencyContacts.push({name,phone});
- contactList.innerHTML+=`<li>${name} (${phone})</li>`;
-
- log("Contact added: "+name);
-
- contactName.value="";
- contactPhone.value="";
-}
-
-/* SOS */
-let sos=false;
-
-function toggleSOS(){
- sos=!sos;
-
- if(sos){
-  sosBtn.classList.add("bg-red-600","sos-active");
-  sosText.textContent="SOS ACTIVE";
-
-  const locationLink=currentLocation ?
-  `https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lon}`
-  :"Location unavailable";
-
-  emergencyContacts.forEach(c=>{
-   log(`Alert sent to ${c.name} (${c.phone})`);
-  });
-
-  log(`Live Location: <a href="${locationLink}" target="_blank" class="text-blue-600 underline">Open Map</a>`);
-  log("Police & ambulance notified (simulated)");
-
- }else{
-  sosBtn.classList.remove("bg-red-600","sos-active");
-  sosText.textContent="SOS cancelled";
-  log("SOS cancelled");
- }
-}
-
-/* VOICE */
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-
-if(SR){
- const rec=new SR();
- rec.continuous=true;
- rec.start();
-
- rec.onresult=e=>{
-  const text=e.results[e.results.length-1][0].transcript.toLowerCase();
-  log("Voice: "+text);
-
-  if(text.includes("help")||text.includes("emergency")){
-   if(!sos) toggleSOS();
-  }
-
-  if(text.includes("start")){
-   findSafestRoute();
-  }
- };
-}
-
-/* LOG */
-function log(msg){
- const d=document.createElement("div");
- d.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
- document.getElementById("log").prepend(d);
-}
-
-</script>
+<!-- Your JS -->
+<script src="js/script.js"></script>
 
 </body>
 </html>
